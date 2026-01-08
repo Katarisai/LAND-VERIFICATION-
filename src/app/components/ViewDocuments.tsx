@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { Download, FileText, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { Download, FileText, CheckCircle, AlertCircle, Clock, FileCheck } from 'lucide-react';
 import { User } from '../App';
 
 interface ViewDocumentsProps {
@@ -161,82 +161,75 @@ User: ${user.name}
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'required':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border-red-200 dark:border-red-800';
       case 'recommended':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800';
       case 'optional':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border-green-200 dark:border-green-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
     }
   };
 
   const getImportanceColor = (importance: string) => {
     switch (importance) {
       case 'Critical':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
       case 'High':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300';
       case 'Medium':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
       case 'Low':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="border-b bg-white sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <FileText className="w-6 h-6 text-blue-600" />
-                <span className="text-xl font-bold">View Documents</span>
-              </div>
-              <Button variant="ghost" onClick={onBack}>
-                ← Back to Dashboard
-              </Button>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="text-sm">
-                <div>{user.name}</div>
-                <div className="text-gray-500 text-xs capitalize">{user.role}</div>
-              </div>
-              <Button variant="ghost" size="sm" onClick={onLogout}>
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="relative min-h-screen w-full bg-transparent">
+      
+      {/* Background Glows */}
+      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[10%] left-[20%] w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px]" />
+      </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* Header Section */}
         <div className="mb-8">
-          <h1 className="text-3xl mb-2">Land Documentation Requirements</h1>
-          <p className="text-gray-600">
-            Complete guide to all documents required for land verification and property transactions.
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Land Documentation Requirements</h1>
+          </div>
+          <p className="text-gray-600 dark:text-gray-400 max-w-3xl">
+            Complete guide to all documents required for land verification and property transactions. Ensure all critical documents are verified before proceeding.
           </p>
         </div>
 
         {/* Download Section */}
-        <Card className="mb-8">
+        <Card className="mb-8 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border-white/20 dark:border-white/10 shadow-lg">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold mb-2">Download Complete Requirements Guide</h2>
-                <p className="text-gray-600">
-                  Get a comprehensive PDF guide with all documentation requirements and checklists.
-                </p>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="hidden md:flex p-3 bg-green-100 dark:bg-green-900/20 rounded-full">
+                   <FileCheck className="w-6 h-6 text-green-600 dark:text-green-400" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold mb-1 text-gray-900 dark:text-white">Download Complete Guide</h2>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    Get a comprehensive PDF guide with all documentation requirements and checklists.
+                  </p>
+                </div>
               </div>
               <Button
                 onClick={() => generatePDF('Land_Documentation_Requirements')}
                 disabled={downloading !== null}
-                className="flex items-center gap-2"
+                className="w-full md:w-auto flex items-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200"
               >
                 <Download className="w-4 h-4" />
                 {downloading === 'Land_Documentation_Requirements' ? 'Generating...' : 'Download PDF'}
@@ -246,82 +239,103 @@ User: ${user.name}
         </Card>
 
         {/* Document Categories */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           {documentRequirements.map((category, categoryIndex) => (
-            <Card key={categoryIndex}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  {category.category}
-                  {category.required && (
-                    <Badge variant="destructive">Required</Badge>
-                  )}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
+            <div key={categoryIndex}>
+                {/* Category Header */}
+                <div className="flex items-center gap-3 mb-4 pl-1">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">{category.category}</h2>
+                    {category.required && (
+                        <Badge variant="destructive" className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700">Required</Badge>
+                    )}
+                </div>
+
+                {/* Grid Layout for Documents */}
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4">
                   {category.documents.map((doc, docIndex) => (
-                    <div key={docIndex} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            {getStatusIcon(doc.status)}
-                            <h3 className="font-semibold">{doc.name}</h3>
-                            <Badge className={getStatusColor(doc.status)}>
-                              {doc.status}
-                            </Badge>
-                            <Badge className={getImportanceColor(doc.importance)}>
-                              {doc.importance}
-                            </Badge>
+                    <Card 
+                        key={docIndex} 
+                        className="
+                            bg-white/70 dark:bg-slate-900/70 backdrop-blur-md 
+                            border border-gray-100 dark:border-gray-800 
+                            hover:border-blue-500/50 dark:hover:border-blue-400/50 
+                            transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5
+                        "
+                    >
+                      <CardContent className="p-5">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                              {/* Header & Badges */}
+                              <div className="flex flex-wrap items-center gap-2 mb-3">
+                                <div className="flex items-center gap-1.5">
+                                    {getStatusIcon(doc.status)}
+                                    <h3 className="font-semibold text-gray-900 dark:text-white leading-tight">
+                                        {doc.name}
+                                    </h3>
+                                </div>
+                              </div>
+                              
+                              {/* Description */}
+                              <p className="text-gray-500 dark:text-gray-400 text-sm mb-4 leading-relaxed">
+                                {doc.description}
+                              </p>
+
+                              {/* Tags */}
+                              <div className="flex gap-2">
+                                <Badge variant="outline" className={`${getStatusColor(doc.status)} border shadow-sm`}>
+                                  {doc.status}
+                                </Badge>
+                                <Badge variant="outline" className={`${getImportanceColor(doc.importance)} border-0`}>
+                                  {doc.importance} Priority
+                                </Badge>
+                              </div>
+                            </div>
+
+                            {/* Action Button */}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => generatePDF(doc.name)}
+                              disabled={downloading !== null}
+                              className="shrink-0 h-10 w-10 rounded-full bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                            >
+                                <Download className="w-4 h-4" />
+                            </Button>
                           </div>
-                          <p className="text-gray-600 text-sm mb-3">{doc.description}</p>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => generatePDF(doc.name)}
-                          disabled={downloading !== null}
-                        >
-                          {downloading === doc.name ? (
-                            'Generating...'
-                          ) : (
-                            <>
-                              <Download className="w-3 h-3 mr-1" />
-                              Info
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    </div>
+                      </CardContent>
+                    </Card>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+            </div>
           ))}
         </div>
 
         {/* Additional Information */}
-        <Card className="mt-8">
+        <Card className="mt-8 bg-blue-50/50 dark:bg-slate-800/50 border-blue-100 dark:border-slate-700 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle>Important Notes</CardTitle>
+            <CardTitle className="text-blue-900 dark:text-blue-100 flex items-center gap-2">
+                <AlertCircle className="w-5 h-5" />
+                Important Notes
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3 text-sm text-gray-600">
-              <p>
-                <strong>Document Validity:</strong> All documents should be recent (within the last 6-12 months)
-                unless specified otherwise.
-              </p>
-              <p>
-                <strong>Original vs Copies:</strong> Original documents are preferred, but certified copies
-                may be accepted in some cases.
-              </p>
-              <p>
-                <strong>Language:</strong> Documents in local language may need to be translated and
-                notarized for international transactions.
-              </p>
-              <p>
-                <strong>Verification Time:</strong> Complete document verification typically takes
-                3-5 business days.
-              </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
+              <div className="p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                <strong className="block text-gray-900 dark:text-white mb-1">Document Validity</strong> 
+                All documents should be recent (within the last 6-12 months) unless specified otherwise.
+              </div>
+              <div className="p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                <strong className="block text-gray-900 dark:text-white mb-1">Original vs Copies</strong> 
+                Original documents are preferred, but certified copies may be accepted in some cases.
+              </div>
+              <div className="p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                <strong className="block text-gray-900 dark:text-white mb-1">Language</strong> 
+                Documents in local language may need to be translated and notarized for international transactions.
+              </div>
+              <div className="p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                <strong className="block text-gray-900 dark:text-white mb-1">Verification Time</strong> 
+                Complete document verification typically takes 3-5 business days.
+              </div>
             </div>
           </CardContent>
         </Card>

@@ -5,7 +5,7 @@ import { Label } from './ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Switch } from './ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Settings, Save, Bell, Shield, Palette, Clock } from 'lucide-react';
+import { Settings, Save, Bell, Shield, Palette } from 'lucide-react';
 import { User as UserType } from '../App';
 
 interface Setting {
@@ -204,7 +204,7 @@ export function SettingsPage({ user, onLogout, onBack, onToggleAI }: SettingsPag
           <Input
             value={setting.value}
             onChange={(e) => handleSettingChange(setting.id, e.target.value)}
-            className="max-w-xs"
+            className="max-w-xs bg-white dark:bg-slate-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white"
           />
         );
       case 'number':
@@ -213,16 +213,16 @@ export function SettingsPage({ user, onLogout, onBack, onToggleAI }: SettingsPag
             type="number"
             value={setting.value}
             onChange={(e) => handleSettingChange(setting.id, parseInt(e.target.value))}
-            className="max-w-xs"
+            className="max-w-xs bg-white dark:bg-slate-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white"
           />
         );
       case 'select':
         return (
           <Select value={setting.value} onValueChange={(value) => handleSettingChange(setting.id, value)}>
-            <SelectTrigger className="max-w-xs">
+            <SelectTrigger className="max-w-xs bg-white dark:bg-slate-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white dark:bg-slate-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white">
               {setting.options?.map((option) => (
                 <SelectItem key={option} value={option}>
                   {option}
@@ -258,10 +258,10 @@ export function SettingsPage({ user, onLogout, onBack, onToggleAI }: SettingsPag
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p>Loading settings...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-300">Loading settings...</p>
         </div>
       </div>
     );
@@ -270,38 +270,26 @@ export function SettingsPage({ user, onLogout, onBack, onToggleAI }: SettingsPag
   const categories = ['general', 'notifications', 'security', 'appearance'];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <nav className="border-b bg-white sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" onClick={onBack} className="mr-2">
-                ← Back
-              </Button>
-              <span className="text-xl font-bold">Construction Manager</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="text-sm">
-                <div>{user.name}</div>
-                <div className="text-gray-500 text-xs capitalize">{user.role}</div>
-              </div>
-              <Button variant="ghost" size="sm" onClick={onLogout}>
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="relative min-h-screen w-full bg-transparent">
+      
+      {/* Background Glows */}
+      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[20%] left-[10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[20%] right-[10%] w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px]" />
+      </div>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-            <p className="text-gray-600 mt-2">Configure your application preferences</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Settings</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">Configure your application preferences</p>
           </div>
-          <Button onClick={handleSaveSettings} disabled={saving}>
+          <Button 
+            onClick={handleSaveSettings} 
+            disabled={saving}
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/30"
+          >
             <Save className="w-4 h-4 mr-2" />
             {saving ? 'Saving...' : 'Save Settings'}
           </Button>
@@ -314,25 +302,31 @@ export function SettingsPage({ user, onLogout, onBack, onToggleAI }: SettingsPag
             if (categorySettings.length === 0) return null;
 
             return (
-              <Card key={category}>
+              <Card 
+                key={category}
+                className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border-white/20 dark:border-white/10 shadow-sm"
+              >
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                     {getCategoryIcon(category)}
                     {getCategoryTitle(category)}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {categorySettings.map((setting) => (
-                    <div key={setting.id} className="flex items-center justify-between py-4 border-b border-gray-100 last:border-b-0">
+                    <div 
+                        key={setting.id} 
+                        className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-gray-100 dark:border-gray-800 last:border-b-0 gap-4"
+                    >
                       <div className="flex-1">
-                        <Label className="text-sm font-medium text-gray-900">
+                        <Label className="text-sm font-medium text-gray-900 dark:text-white">
                           {setting.label}
                         </Label>
                         {setting.description && (
-                          <p className="text-sm text-gray-500 mt-1">{setting.description}</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{setting.description}</p>
                         )}
                       </div>
-                      <div className="ml-4">
+                      <div className="sm:ml-4">
                         {renderSettingInput(setting)}
                       </div>
                     </div>
@@ -345,7 +339,12 @@ export function SettingsPage({ user, onLogout, onBack, onToggleAI }: SettingsPag
 
         {/* Save Button at Bottom */}
         <div className="mt-8 flex justify-end">
-          <Button onClick={handleSaveSettings} disabled={saving} size="lg">
+          <Button 
+            onClick={handleSaveSettings} 
+            disabled={saving} 
+            size="lg"
+            className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200"
+          >
             <Save className="w-4 h-4 mr-2" />
             {saving ? 'Saving...' : 'Save All Settings'}
           </Button>

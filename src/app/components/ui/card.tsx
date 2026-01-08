@@ -2,31 +2,35 @@ import * as React from "react";
 
 import { cn } from "./utils";
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card"
-      className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
 
-function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
-  return (
+
+const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
     <div
-      data-slot="card-header"
+      ref={ref}
       className={cn(
-        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 pt-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
-        className,
+        // BASE STYLES: Rounded corners, glass effect, subtle border
+        "rounded-3xl border border-white/50 bg-white/60 text-card-foreground shadow-lg backdrop-blur-xl transition-all",
+        className
       )}
       {...props}
     />
-  );
-}
+  )
+);
+Card.displayName = "Card";
+
+const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("flex flex-col space-y-1.5 p-6 border-b border-white/20", className)} // Added separator
+      {...props}
+    />
+  )
+);
+CardHeader.displayName = "CardHeader";
+
+
 
 function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (

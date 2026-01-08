@@ -1,3 +1,60 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Apple-like Colors */
+    --background: 240 5% 96%; /* #F5F5F7 */
+    --foreground: 0 0% 11%;   /* #1D1D1F */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 11%;
+    --border: 240 6% 90%;
+  }
+
+  .dark {
+    --background: 240 10% 4%; /* Deep Mac Dark */
+    --foreground: 0 0% 98%;
+    --card: 240 10% 10%;
+    --card-foreground: 0 0% 98%;
+    --border: 240 4% 16%;
+  }
+
+  body {
+    /* THE MAC FONT STACK */
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, sans-serif;
+    @apply bg-background text-foreground antialiased overflow-x-hidden;
+  }
+}
+
+@layer components {
+  /* FIX: We removed 'animate-blob' from @apply 
+     and added the 'animation' property directly below.
+  */
+  .ambient-glow-blue {
+    @apply absolute w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-[100px] -z-10 mix-blend-multiply dark:mix-blend-screen;
+    animation: blob 7s infinite;
+  }
+  
+  .ambient-glow-purple {
+    @apply absolute w-[500px] h-[500px] bg-purple-500/20 rounded-full blur-[100px] -z-10 mix-blend-multiply dark:mix-blend-screen;
+    animation: blob 7s infinite;
+    animation-delay: 2s; /* Replaces animation-delay-2000 */
+  }
+
+  .glass-panel {
+    @apply bg-white/70 dark:bg-black/60 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-xl;
+  }
+}
+
+/* Keyframes definition */
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}

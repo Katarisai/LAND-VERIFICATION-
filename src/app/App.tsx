@@ -4,7 +4,6 @@ import { Dashboard } from './components/Dashboard';
 import { LandListings } from './components/LandListings';
 import { LandDetail } from './components/LandDetail';
 import { AIAssistant } from './components/AIAssistant';
-import { NavigationMenu } from './components/NavigationMenu';
 import { ViewDocuments } from './components/ViewDocuments';
 import { ProjectsPage } from './components/ProjectsPage';
 import { RawMaterialsPage } from './components/RawMaterialsPage';
@@ -12,8 +11,8 @@ import { WorkersPage } from './components/WorkersPage';
 import { SchedulePage } from './components/SchedulePage';
 import { DailyReportsPage } from './components/DailyReportsPage';
 import { SettingsPage } from './components/SettingsPage';
-import { Button } from './components/ui/button';
-import { MoreVertical } from 'lucide-react';
+import { MacLayout } from './components/layout/MacLayout';
+import { LogOut } from 'lucide-react'; // Import icon for the placeholder page
 
 export type UserRole = 'buyer' | 'seller' | 'legal' | 'admin' | null;
 
@@ -25,20 +24,19 @@ export interface User {
 }
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'login' | 'dashboard' | 'listings' | 'detail' | 'projects' | 'materials' | 'suppliers' | 'workers' | 'schedule' | 'daily-reports' | 'work-reports' | 'reports' | 'settings' | 'documents'>('login');
+  const [currentPage, setCurrentPage] = useState<string>('login');
   const [user, setUser] = useState<User | null>(null);
   const [selectedLandId, setSelectedLandId] = useState<string | null>(null);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
-  const [showNavigationMenu, setShowNavigationMenu] = useState(false);
 
   const handleLogin = (role: UserRole) => {
-    // Mock login
     setUser({
       id: '1',
       name: role === 'buyer' ? 'John Buyer' : role === 'seller' ? 'Sarah Seller' : 'Legal Expert',
       email: `${role}@cm.com`,
       role
     });
+    // Always send them to dashboard first, the Role Guard will decide what they see
     setCurrentPage('dashboard');
   };
 
@@ -46,7 +44,6 @@ export default function App() {
     setUser(null);
     setCurrentPage('login');
     setSelectedLandId(null);
-    setShowNavigationMenu(false);
   };
 
   const handleViewLand = (landId: string) => {
@@ -60,171 +57,179 @@ export default function App() {
       setSelectedLandId(null);
     } else if (currentPage === 'listings') {
       setCurrentPage('dashboard');
+    } else {
+      setCurrentPage('dashboard');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#EAEBF0] dark:bg-[#050505]">
+      
+      {/* 1. LOGIN PAGE (Public) */}
       {currentPage === 'login' && (
         <LoginPage onLogin={handleLogin} />
       )}
 
-      {currentPage === 'dashboard' && user && (
-        <div className="relative">
-          <Dashboard
-            user={user}
-            onLogout={handleLogout}
-            onNavigate={setCurrentPage}
-            onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
-          />
-          <Button
-            className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg z-40"
-            onClick={() => setShowNavigationMenu(true)}
-          >
-            <MoreVertical className="w-6 h-6" />
-          </Button>
-        </div>
-      )}
+      {/* 2. AUTHENTICATED AREA */}
+      {currentPage !== 'login' && user && (
+        <>
+          {/* =================================================================================
+             🔒 SELLER PORTAL LOCK
+             Only render the MacLayout and Dashboard if the user is explicitly a 'seller'.
+             ================================================================================= */}
+          {user.role === 'seller' ? (
+            <MacLayout
+              user={user}
+              activePage={currentPage}
+              onNavigate={setCurrentPage}
+              onLogout={handleLogout}
+              onChatToggle={() => setShowAIAssistant(!showAIAssistant)}
+            >
+              {/* --- SELLER ROUTES BUNDLE --- */}
+              {currentPage === 'dashboard' && (
+                <Dashboard
+                  user={user}
+                  onNavigate={setCurrentPage}
+                  onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
+                />
+              )}
 
-      {currentPage === 'listings' && user && (
-        <LandListings
-          user={user}
-          onLogout={handleLogout}
-          onViewLand={handleViewLand}
-          onBack={handleBack}
-          onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
-        />
-      )}
+              {currentPage === 'listings' && (
+                <LandListings
+                  user={user}
+                  onLogout={handleLogout}
+                  onViewLand={handleViewLand}
+                  onBack={handleBack}
+                  onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
+                />
+              )}
 
-      {currentPage === 'detail' && user && selectedLandId && (
-        <LandDetail
-          user={user}
-          landId={selectedLandId}
-          onLogout={handleLogout}
-          onBack={handleBack}
-          onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
-        />
-      )}
+              {currentPage === 'detail' && selectedLandId && (
+                <LandDetail
+                  user={user}
+                  landId={selectedLandId}
+                  onLogout={handleLogout}
+                  onBack={handleBack}
+                  onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
+                />
+              )}
 
-      {/* View Documents Page */}
-      {currentPage === 'documents' && user && (
-        <ViewDocuments
-          user={user}
-          onLogout={handleLogout}
-          onBack={() => setCurrentPage('dashboard')}
-        />
-      )}
+              {currentPage === 'documents' && (
+                <ViewDocuments
+                  user={user}
+                  onLogout={handleLogout}
+                  onBack={() => setCurrentPage('dashboard')}
+                />
+              )}
 
-      {/* Construction Management Pages */}
-      {currentPage === 'projects' && user && (
-        <ProjectsPage
-          user={user}
-          onLogout={handleLogout}
-          onBack={() => setCurrentPage('dashboard')}
-          onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
-        />
-      )}
+              {/* Construction Management Pages */}
+              {currentPage === 'projects' && (
+                <ProjectsPage
+                  user={user}
+                  onLogout={handleLogout}
+                  onBack={() => setCurrentPage('dashboard')}
+                  onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
+                />
+              )}
 
-      {currentPage === 'materials' && user && (
-        <RawMaterialsPage
-          user={user}
-          onLogout={handleLogout}
-          onBack={() => setCurrentPage('dashboard')}
-          onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
-        />
-      )}
+              {currentPage === 'materials' && (
+                <RawMaterialsPage
+                  user={user}
+                  onLogout={handleLogout}
+                  onBack={() => setCurrentPage('dashboard')}
+                  onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
+                />
+              )}
 
-      {currentPage === 'workers' && user && (
-        <WorkersPage
-          user={user}
-          onLogout={handleLogout}
-          onBack={() => setCurrentPage('dashboard')}
-          onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
-        />
-      )}
+              {currentPage === 'workers' && (
+                <WorkersPage
+                  user={user}
+                  onLogout={handleLogout}
+                  onBack={() => setCurrentPage('dashboard')}
+                  onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
+                />
+              )}
 
-      {currentPage === 'schedule' && user && (
-        <SchedulePage
-          user={user}
-          onLogout={handleLogout}
-          onBack={() => setCurrentPage('dashboard')}
-          onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
-        />
-      )}
+              {currentPage === 'schedule' && (
+                <SchedulePage
+                  user={user}
+                  onLogout={handleLogout}
+                  onBack={() => setCurrentPage('dashboard')}
+                  onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
+                />
+              )}
 
-      {currentPage === 'daily-reports' && user && (
-        <DailyReportsPage
-          user={user}
-          onLogout={handleLogout}
-          onBack={() => setCurrentPage('dashboard')}
-          onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
-        />
-      )}
+              {currentPage === 'daily-reports' && (
+                <DailyReportsPage
+                  user={user}
+                  onLogout={handleLogout}
+                  onBack={() => setCurrentPage('dashboard')}
+                  onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
+                />
+              )}
 
-      {currentPage === 'settings' && user && (
-        <SettingsPage
-          user={user}
-          onLogout={handleLogout}
-          onBack={() => setCurrentPage('dashboard')}
-          onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
-        />
-      )}
+              {currentPage === 'settings' && (
+                <SettingsPage
+                  user={user}
+                  onLogout={handleLogout}
+                  onBack={() => setCurrentPage('dashboard')}
+                  onToggleAI={() => setShowAIAssistant(!showAIAssistant)}
+                />
+              )}
 
-      {/* Placeholder pages for remaining features */}
-      {(currentPage === 'suppliers' || currentPage === 'work-reports' || currentPage === 'reports') && user && (
-        <div className="min-h-screen bg-gray-50">
-          <nav className="border-b bg-white sticky top-0 z-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl font-bold">Construction Manager</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-sm">
-                    <div>{user.name}</div>
-                    <div className="text-gray-500 text-xs capitalize">{user.role}</div>
+              {/* Placeholder for future Seller modules */}
+              {['suppliers', 'work-reports', 'reports', 'analytics'].includes(currentPage) && (
+                <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+                  <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-4">
+                    <span className="text-2xl">🚧</span>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={handleLogout}>
-                    Logout
-                  </Button>
+                  <h2 className="text-2xl font-bold text-gray-800 capitalize mb-2">
+                    {currentPage.replace('-', ' ')}
+                  </h2>
+                  <p className="text-gray-500 max-w-md">
+                    This module is currently under development.
+                  </p>
                 </div>
-              </div>
+              )}
+
+              {/* Global AI Assistant (Seller Only) */}
+              {showAIAssistant && (
+                <AIAssistant
+                  isOpen={showAIAssistant}
+                  onClose={() => setShowAIAssistant(false)}
+                />
+              )}
+            </MacLayout>
+          ) : (
+            
+            /* =================================================================================
+               ⛔ UNAUTHORIZED / OTHER ROLES
+               This is what Buyers or Legal Experts see for now.
+               We will replace this with the 'BuyerLayout' in the next step.
+               ================================================================================= */
+            <div className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-black text-center p-4">
+               <div className="max-w-md w-full bg-gray-50 dark:bg-gray-900 p-8 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-2xl">
+                 <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span className="text-3xl">👤</span>
+                 </div>
+                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                   Welcome, {user.name}
+                 </h1>
+                 <p className="text-gray-500 dark:text-gray-400 mb-8">
+                   You are logged in as a <strong className="capitalize text-indigo-600">{user.role}</strong>. <br/>
+                   The Buyer & Legal portals are coming up next!
+                 </p>
+                 <button 
+                   onClick={handleLogout}
+                   className="flex items-center justify-center w-full px-4 py-3 bg-white dark:bg-black border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-300 rounded-xl transition-all font-medium"
+                 >
+                   <LogOut className="w-4 h-4 mr-2" />
+                   Sign Out
+                 </button>
+               </div>
             </div>
-          </nav>
-
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="text-center">
-              <h1 className="text-3xl mb-4 capitalize">{currentPage.replace('-', ' ')}</h1>
-              <p className="text-gray-600 mb-8">
-                This page is under development. Coming soon!
-              </p>
-              <Button onClick={() => setCurrentPage('dashboard')}>
-                Back to Dashboard
-              </Button>
-            </div>
-          </div>
-
-          <Button
-            className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg z-40"
-            onClick={() => setShowNavigationMenu(true)}
-          >
-            <MoreVertical className="w-6 h-6" />
-          </Button>
-        </div>
-      )}
-
-      {showAIAssistant && user && (
-        <AIAssistant
-          user={user}
-          onClose={() => setShowAIAssistant(false)}
-        />
-      )}
-
-      {showNavigationMenu && user && (
-        <NavigationMenu
-          onNavigate={setCurrentPage}
-          onClose={() => setShowNavigationMenu(false)}
-        />
+          )}
+        </>
       )}
     </div>
   );
